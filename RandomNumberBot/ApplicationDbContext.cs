@@ -12,7 +12,7 @@ namespace RandomNumberBot
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNpgsql(DefaultValues.CONNECTION);
+              optionsBuilder.UseNpgsql(DefaultValues.CONNECTION);
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

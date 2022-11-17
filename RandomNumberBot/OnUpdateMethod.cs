@@ -1,4 +1,5 @@
-﻿using RandomNumberBot.Entity;
+﻿using Microsoft.EntityFrameworkCore;
+using RandomNumberBot.Entity;
 using RandomNumberBot.Repo;
 using System.Net.Http.Headers;
 using System.Text;
@@ -29,26 +30,39 @@ namespace RandomNumberBot
             if (message.Text == "Random")
             {
                 var userRepo = new UserRepositoryAsync();
-                var reandomIndex = await userRepo.RandomUser();
+               // var reandomIndex = await userRepo.RandomUser();
                 StringBuilder textBuilder = new StringBuilder();
-                for(int i = 0; i < reandomIndex.Count; i++)
-                {
-                    textBuilder.Append(Sticker[i] + ". Tasodifiy Raqam: " + reandomIndex[i] + "\n");
-                }
-                var text = textBuilder.ToString();
-                if (string.IsNullOrEmpty(text))
+
+                var user = await userRepo.RandomAndGetUser();
+                if(user == null)
                 {
                     await botClient.SendTextMessageAsync(
                     chatId: chatId,
                     text: "Foydalanuvchi topilmadi"
                     );
-
                     return;
                 }
+
+                foreach(var comment in user.Comments)
+                {
+                    textBuilder.Append(comment + "\n\n");
+                }
+                string comments = textBuilder.ToString();
+
+                if (string.IsNullOrEmpty(comments))
+                {
+                    comments = "Taklif kelmagan";
+                }
+
+                string text = "Tanlov raqami 🔑:" + user.VoterNumber + "\n\n" +
+                              "Foydalanuvchi 👤 : " + user.FullName+ "\n\n"+
+                              "Takliflar 💼: \n " + textBuilder.ToString();
+
                 await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: textBuilder.ToString()
+                    text: text
                     );
+                
             }
             else if (message.Text == "Delete User")
             {

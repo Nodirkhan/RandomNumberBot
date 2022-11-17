@@ -3,7 +3,6 @@ using RandomNumberBot.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace RandomNumberBot.Repo
@@ -12,6 +11,7 @@ namespace RandomNumberBot.Repo
     {
         private ApplicationDbContext _context = new();
         private bool IsRandom = true;
+        private static List<long> randomed = new List<long>();
 
         public async Task<List<int>> RandomUser()
         {
@@ -32,6 +32,39 @@ namespace RandomNumberBot.Repo
             }
 
             return selectedNumbers;
+        }
+
+        public async Task<User> RandomAndGetUser()
+        {
+            bool IsRandom = true;
+            var numbers = await _context.Users.Where(u => u.Comments.Count > 0)
+                .Select(u => u.UserId).ToListAsync();
+
+            var Length = numbers.Count;
+            Random random = new Random();
+            int randomIndex = random.Next(0, Length);
+
+            if (numbers.Count == 0)
+                return null;
+
+            while (IsRandom)
+            {
+                if (Length < 0)
+                    return null;
+
+                if (!randomed.Contains(numbers[randomIndex]))
+                {
+                    randomed.Add(numbers[randomIndex]);
+                    IsRandom = false;
+                }
+                Length--;
+            }
+
+            var user = await _context.Users.AsNoTracking()
+                .FirstOrDefaultAsync(u => u.UserId == numbers[randomIndex]);
+
+            return user;
+
         }
         public async Task<bool> CopyAndDelete()
         {
@@ -59,6 +92,7 @@ namespace RandomNumberBot.Repo
                 }
                 position.PositionNumber += 1;
                 await _context.SaveChangesAsync();
+                randomed.Clear();
             }
             catch
             {
