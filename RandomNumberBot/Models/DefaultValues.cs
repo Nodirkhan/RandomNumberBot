@@ -9,7 +9,9 @@ namespace RandomNumberBot.Entity
 
         public static List<long> admins = new List<long>
         {
-            738082106
+            738082106,
+            766170655,
+            1337246079
         };
     }
 }

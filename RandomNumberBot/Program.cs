@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Primitives;
-using RandomNumberBot;
+﻿using RandomNumberBot;
 using RandomNumberBot.Entity;
-using RandomNumberBot.Repo;
 using System;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
